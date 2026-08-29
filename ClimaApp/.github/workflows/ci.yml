@@ -1,0 +1,38 @@
+name: CI ClimaApp
+# El flujo de trabajo se ejecutara en cada push a las ramas main, develop y feature
+# Tambien se ejecutara en cada pull request hacia las ramas main y develop
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - feature/**
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Realizar pruebas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Ejecutar pruebas
+        run: mvn test
+
+      - name: Guardar reporte de pruebas
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-pruebas
+          path: target/surefire-reports/
