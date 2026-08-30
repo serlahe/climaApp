@@ -28,7 +28,7 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Ejecutar pruebas
+      - name: Ejecutar pruebas unitarias y BDD
         run: mvn test
 
       - name: Guardar reporte de pruebas
