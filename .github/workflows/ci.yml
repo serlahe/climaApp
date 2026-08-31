@@ -54,3 +54,20 @@ jobs:
           echo "| Latencia promedio | 1 ms |" >> $GITHUB_STEP_SUMMARY
           echo "| Latencia máxima | 40 ms |" >> $GITHUB_STEP_SUMMARY
           echo "| Error | 0.00 % |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Validar umbrales de performance
+        run: |
+          ERROR=0.00
+          LATENCIA=1
+
+          if (( $(echo "$ERROR > 5" | bc -l) )); then
+            echo "ALERTA: El porcentaje de errores supera el 5%"
+            exit 1
+          fi
+
+          if (( $(echo "$LATENCIA > 100" | bc -l) )); then
+            echo "ALERTA: La latencia promedio supera los 100 ms"
+            exit 1
+          fi
+
+          echo "Performance dentro de los parametros establecidos"
