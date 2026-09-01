@@ -54,7 +54,7 @@ Se implementaron los Step Definitions utilizando Java y Cucumber.
 Los pasos se encuentran en `src/test/java/clima/ConsultaClimaSteps.java`.
 Las pruebas BDD se ejecutan por `RunCucumberTest.java`.
 
-## 3. Integración con CI
+## 13. Integración con CI
 Las pruebas BDD fueron integradas al pipeline de GitHub Actions junto con las pruebas
 El pipeline ejecuta las pruebas mediante el comando `mvn test`.
 
@@ -75,10 +75,10 @@ Se monitorearon las siguientes métricas:
 - Latencia máxima: 40 ms.
 - Errores: 0.00 %.
 
-## 7. Dashboard del Pipeline
+## 17. Dashboard del Pipeline
 Se agregó un resumen de las métricas de performance al resumen de GitHub Actions mediante `GITHUB_STEP_SUMMARY`.
 
-## 8. Alertas
+## 18. Alertas
 Se configuraron umbrales para detectar problemas de performance.
 
 ## 19. Evidencias
