@@ -1,0 +1,12 @@
+RESULTADOS PRUEBA DE PERFORMANCE - ClimaApp
+
+Samples: 100
+Throughput: 22.8 solicitudes/segundo
+Average: 1 ms
+Min: 0 ms
+Max: 40 ms
+Std. Dev.: 3.89 ms
+Error: 0.00 %
+Received: 4.06 KB/s
+Sent: 2.72 KB/s
+Average Bytes: 182 bytes
