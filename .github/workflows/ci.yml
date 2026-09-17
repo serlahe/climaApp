@@ -1,6 +1,5 @@
 name: CI ClimaApp
-# El flujo de trabajo se ejecutara en cada push a las ramas main, develop y feature
-# Tambien se ejecutara en cada pull request hacia las ramas main y develop
+
 on:
   push:
     branches:
@@ -13,9 +12,28 @@ on:
       - develop
 
 jobs:
-  test:
-    name: Realizar pruebas
+  build:
+    name: Build
     runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Compilar proyecto
+        run: mvn clean compile
+
+  test:
+    name: Pruebas automatizadas
+    runs-on: ubuntu-latest
+    needs: build
 
     steps:
       - name: Obtener codigo
@@ -43,17 +61,17 @@ jobs:
           name: reporte-bdd
           path: target/cucumber-report.html
 
-      - name: Mostrar métricas de performance
+          - name: Mostrar metricas de performance
         run: |
-          echo "## Métricas de Performance" >> $GITHUB_STEP_SUMMARY
+          echo "## Metricas de Performance" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Indicador | Resultado |" >> $GITHUB_STEP_SUMMARY
           echo "|---|---:|" >> $GITHUB_STEP_SUMMARY
           echo "| Samples | 100 |" >> $GITHUB_STEP_SUMMARY
           echo "| Throughput | 22.8 solicitudes/s |" >> $GITHUB_STEP_SUMMARY
           echo "| Latencia promedio | 1 ms |" >> $GITHUB_STEP_SUMMARY
-          echo "| Latencia máxima | 40 ms |" >> $GITHUB_STEP_SUMMARY
-          echo "| Error | 0.00 % |" >> $GITHUB_STEP_SUMMARY
+          echo "| Latencia maxima | 40 ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| Error | 0.00 % |"
 
       - name: Validar umbrales de performance
         run: |

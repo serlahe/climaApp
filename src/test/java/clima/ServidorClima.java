@@ -9,14 +9,12 @@ import java.net.InetSocketAddress;
 
 public class ServidorClima {
 
-    public static void main(String[] args) throws IOException {
-
+    public static HttpServer crearServidor() throws IOException {
         HttpServer servidor = HttpServer.create(
-                new InetSocketAddress(8080), 0
+                new InetSocketAddress("localhost", 0), 0
         );
 
         servidor.createContext("/clima", (HttpExchange exchange) -> {
-
             String respuesta = """
                     {
                       "ciudad": "Melipilla",
@@ -29,20 +27,24 @@ public class ServidorClima {
                     "Content-Type", "application/json"
             );
 
-            exchange.sendResponseHeaders(
-                    200,
-                    respuesta.getBytes().length
-            );
+            byte[] datos = respuesta.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, datos.length);
 
             try (OutputStream salida = exchange.getResponseBody()) {
-                salida.write(respuesta.getBytes());
+                salida.write(datos);
             }
         });
 
+        return servidor;
+    }
+
+    public static void main(String[] args) throws IOException {
+        HttpServer servidor = crearServidor();
         servidor.start();
 
         System.out.println(
-                "Servidor de clima iniciado en http://localhost:8080/clima"
+                "Servidor de clima iniciado en http://localhost:"
+                        + servidor.getAddress().getPort() + "/clima"
         );
     }
 }
