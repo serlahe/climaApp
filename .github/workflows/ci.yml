@@ -61,7 +61,7 @@ jobs:
           name: reporte-bdd
           path: target/cucumber-report.html
 
-          - name: Mostrar metricas de performance
+      - name: Mostrar metricas de performance
         run: |
           echo "## Metricas de Performance" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -71,7 +71,7 @@ jobs:
           echo "| Throughput | 22.8 solicitudes/s |" >> $GITHUB_STEP_SUMMARY
           echo "| Latencia promedio | 1 ms |" >> $GITHUB_STEP_SUMMARY
           echo "| Latencia maxima | 40 ms |" >> $GITHUB_STEP_SUMMARY
-          echo "| Error | 0.00 % |"
+          echo "| Error | 0.00 % |" >> $GITHUB_STEP_SUMMARY
 
       - name: Validar umbrales de performance
         run: |
