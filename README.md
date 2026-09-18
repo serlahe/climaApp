@@ -84,4 +84,78 @@ Se configuraron umbrales para detectar problemas de performance.
 ## 19. Evidencias
 Se realizaron capturas de los escenarios BDD ejecutados, el reporte HTML, las métricas de performance, el resumen del pipeline y la validación de los umbrales.
 
-Las capturas se incluyen en el informe de la evaluación.
+## Las capturas se incluyen en el informe de la evaluación.
+
+
+
+
+
+
+
+
+## Integración Continua y Pipeline de Pruebas
+
+## 20. Pipeline de Build y Pruebas Automatizadas
+Se configuró un pipeline de Integración Continua utilizando GitHub Actions.
+El pipeline se encuentra en el archivo `.github/workflows/ci.yml` y permite automatizar la compilación del proyecto y la ejecución de las pruebas.
+
+## 21. Etapa de Build
+La primera etapa del pipeline corresponde a la compilación del proyecto.
+Para realizar esta etapa se utiliza el comando:
+
+`mvn clean compile`
+
+## 22. Etapa de Pruebas Automatizadas
+Una vez finalizada correctamente la etapa de Build, se ejecutan las pruebas automatizadas mediante:
+
+`mvn test`
+
+Esta etapa incluye las pruebas unitarias y las pruebas BDD implementadas con Cucumber.
+
+## 23. Reportes de Pruebas
+El pipeline genera los reportes de las pruebas automatizadas y los almacena como artefactos de GitHub Actions.
+Se generan los siguientes reportes:
+
+- `reporte-pruebas`: contiene los reportes generados por Maven Surefire.
+- `reporte-bdd`: contiene el reporte HTML generado por Cucumber.
+
+## 24. Ejecución del Pipeline
+El pipeline fue ejecutado correctamente en GitHub Actions, completando las etapas de Build y Pruebas Automatizadas sin errores.
+
+## 25. Pipeline de Deployment
+Como parte de la tercera actividad, se implementó un pipeline de deployment utilizando GitHub Actions.
+El pipeline se encuentra en el archivo `.github/workflows/deploy.yml` y permite ejecutar pruebas de aceptación, generar el artefacto de la aplicación y realizar el despliegue en un ambiente de prueba.
+
+## 26. Pruebas de Aceptación
+Antes del despliegue se ejecutan las pruebas de aceptación mediante Cucumber/BDD.
+Para ejecutar estas pruebas se utiliza:
+
+`mvn -Dtest=RunCucumberTest test`
+
+El despliegue continúa solamente si las pruebas de aceptación finalizan correctamente.
+
+## 27. Build y Despliegue
+Una vez aprobadas las pruebas de aceptación, el pipeline genera el artefacto de la aplicación mediante:
+
+`mvn clean package -DskipTests`
+
+## 28. Validación del Despliegue
+Después de copiar el artefacto, el pipeline comprueba que el archivo de la aplicación se encuentre correctamente desplegado en el ambiente de prueba.
+Si la validación es correcta, el despliegue finaliza exitosamente.
+
+## 29. Rollback
+Se implementó un mecanismo de rollback que permite recuperar la versión anterior de la aplicación en caso de que ocurra un error durante la validación del despliegue.
+Para demostrar su funcionamiento, se implementó una simulación controlada de error durante la validación de la nueva versión.
+
+## 30. Evidencias del Deployment y Rollback
+El pipeline de deployment fue ejecutado correctamente en GitHub Actions.
+Las evidencias incluyen:
+
+- Ejecución de las pruebas de aceptación.
+- Generación del artefacto y despliegue en el ambiente de prueba.
+- Validación del despliegue.
+- Ejecución y validación del mecanismo de rollback.
+
+
+
+## Las evidencias de la ejecución se incluyen en el informede la evaluacion.
