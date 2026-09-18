@@ -1,5 +1,7 @@
 name: Deployment ClimaApp
 
+# Permite ejecutar el pipeline manualy automaticamente
+# cuando se realizan cambios en main o en ramas feature.
 on:
   workflow_dispatch:
   push:
@@ -8,6 +10,8 @@ on:
       - feature/**
 
 jobs:
+
+  # Etapa de pruebas de aceptacion mediante Cucumber/BDD.
   acceptance-tests:
     name: Acceptance Tests
     runs-on: ubuntu-latest
@@ -26,6 +30,7 @@ jobs:
       - name: Ejecutar pruebas de aceptacion
         run: mvn -Dtest=RunCucumberTest test
 
+  # Etapa encargada de desplegar la aplicacion en el ambiente de prueba.
   deploy:
     name: Despliegue en ambiente de prueba
     runs-on: ubuntu-latest
@@ -42,14 +47,17 @@ jobs:
           java-version: '17'
           cache: maven
 
+      # Genera el archivo JAR que sera utilizado durante el despliegue.
       - name: Generar artefacto de despliegue
         run: mvn clean package -DskipTests
 
+      # Crea las carpetas utilizadas como ambiente de prueba y respaldo.
       - name: Preparar ambiente de prueba
         run: |
           mkdir -p deployment/test-environment
           mkdir -p deployment/backup
 
+      # Guarda la version anterior antes de realizar el nuevo despliegue.
       - name: Crear respaldo de la version anterior
         run: |
           if [ -f deployment/test-environment/ClimaApp.jar ]; then
@@ -59,11 +67,13 @@ jobs:
             echo "No existe una version anterior. Se continua con el primer despliegue."
           fi
 
+      # Copia la nueva version al ambiente de prueba.
       - name: Desplegar nueva version
         run: |
           cp target/*.jar deployment/test-environment/ClimaApp.jar
           echo "Nueva version desplegada en ambiente de prueba."
 
+      # Comprueba que el artefacto haya sido desplegado
       - name: Validar despliegue
         run: |
           if [ -f deployment/test-environment/ClimaApp.jar ]; then
@@ -73,6 +83,7 @@ jobs:
             exit 1
           fi
 
+      # Si falla, recupera la version respaldada
       - name: Rollback ante error
         if: failure()
         run: |
@@ -83,9 +94,53 @@ jobs:
             echo "No existe una version anterior para realizar rollback."
           fi
 
+      # Guarda los archivos generados
       - name: Guardar evidencia del despliegue
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: evidencia-deployment
           path: deployment/
+
+  # Demostración controlada del mecanismo de rollback.
+  rollback-demo:
+    name: Demostración de Rollback
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Preparar versiones de prueba
+        run: |
+          mkdir -p deployment/test-environment
+          mkdir -p deployment/backup
+
+          echo "Version anterior de ClimaApp" > deployment/test-environment/ClimaApp.jar
+          cp deployment/test-environment/ClimaApp.jar deployment/backup/ClimaApp.jar
+
+          echo "Nueva version de ClimaApp" > deployment/test-environment/ClimaApp.jar
+
+      # Simula un error durante la validación de la nueva versión.
+      - name: Simular fallo de validación
+        id: validacion
+        continue-on-error: true
+        run: |
+          echo "ERROR: La validacion de la nueva version ha fallado."
+          exit 1
+
+      # Recupera la versión anterior cuando la validación falla.
+      - name: Ejecutar Rollback
+        if: steps.validacion.outcome == 'failure'
+        run: |
+          cp deployment/backup/ClimaApp.jar deployment/test-environment/ClimaApp.jar
+          echo "Rollback ejecutado correctamente."
+          echo "Se recupero la version anterior de ClimaApp."
+
+      # Comprueba que la versión anterior fue restaurada.
+      - name: Validar Rollback
+        run: |
+          if grep -q "Version anterior de ClimaApp" deployment/test-environment/ClimaApp.jar; then
+            echo "Rollback validado correctamente."
+          else
+            echo "ERROR: El rollback no restauro la version anterior."
+            exit 1
+          fi
